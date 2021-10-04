@@ -1,5 +1,6 @@
 package nextstep.web;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -26,9 +27,11 @@ public class ComponentContainer {
     public static void initialize(Object... basePackage) throws Exception {
         Reflections reflections = new Reflections(basePackage);
         initializeConfigurations(reflections.getTypesAnnotatedWith(Configuration.class));
-        initializeComponents(reflections.getTypesAnnotatedWith(Repository.class));
-        initializeComponents(reflections.getTypesAnnotatedWith(Service.class));
-        initializeComponents(reflections.getTypesAnnotatedWith(Controller.class));
+
+        List<Class<? extends Annotation>> annotations = List.of(Repository.class, Service.class, Controller.class);
+        for (Class<? extends Annotation> annotation : annotations) {
+            initializeComponents(reflections.getTypesAnnotatedWith(annotation));
+        }
     }
 
     private static void initializeConfigurations(Set<Class<?>> configurationTypes) throws Exception {
